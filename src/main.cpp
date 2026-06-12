@@ -1,32 +1,51 @@
 #include <3ds.h>
 #include "csvc.h"
 #include "plgldr.h"
-#define PA_PTR(addr)            (void *)((u32)(addr) | 1 << 31)
-#define REG32(addr)             (*(vu32 *)(PA_PTR(addr)))
 
-int main(){
-
-
-	launchPlugin(mainStruct);
-
-	exit:
-
-	ndmuExit();
-	nsExit();
-
-	exitMainMenu();
-	return (0);
+void init_libs(){
+	srvInit();
+    plgLdrInit();
 }
 
-int __entrypoint(int arg, void* temporaryStack)
-{
+void main(){
+	
+}
 
-	volatile PluginHeader* header = (volatile PluginHeader*)PA_FROM_VA_PTR(FwkSettings::Header);
-	header->notifyHomeEvent = true;
-	svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-	svcCreateThread(&g_keepThreadHandle, KeepThreadMain, arg, (u32 *)&keepThreadStack[0x1000], 0x1A, 0);
-	svcWaitSynchronization(g_continueGameEvent, U64_MAX);
-	svcCloseHandle(g_continueGameEvent);
+void deinit_libs(){
+	
+}
 
-	return 0;
+
+extern char* fake_heap_start;
+extern char* fake_heap_end;
+extern u32 __ctru_heap;
+extern u32 __ctru_linear_heap;
+
+u32 __ctru_heap_size        = 0;
+u32 __ctru_linear_heap_size = 0;
+
+inline void __system_allocateHeaps(PluginHeader *header){
+    __ctru_heap_size = header->heapSize;
+    __ctru_heap = header->heapVA;
+
+    fake_heap_start = (char *)__ctru_heap;
+    fake_heap_end = fake_heap_start + __ctru_heap_size;
+}
+
+int __entrypoint(int arg, void* temporaryStack){
+	
+	PluginHeader *header = (PluginHeader *)0x07000000;
+
+    if (header->magic != HeaderMagic)
+        return;
+
+    __system_allocateHeaps(header);
+	
+    init_libs();
+
+    svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
+    svcCreateThread(&thread, main, 0, (u32 *)(stack + STACK_SIZE), 30, -1);
+
+	deinit_libs();
+	
 }
