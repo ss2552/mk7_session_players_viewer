@@ -1,29 +1,11 @@
-Author: Nanquitas
+Author: esu
 
-Version: # Plugin version
+Version:
     Major: 0
-    Minor: 6
+    Minor: 0
     Revision: 0
 
-Targets: # Low TitleId of games which are compatibles with this plugin (0 for all)
-    #- 0x00113100
-    #- 0x00113200
-
-
 Title: CTRPF - Action Replay
-
-Summary: CTRPF Plugin, with a lot of tools
-
-Description: |
-  This plugin gives you access to a set of tools
-
-  Features:
-    - Memory searcher
-    - Hex Editor
-    - Code creator
-    - Code import from file
-    - Action Replay engine with extra capabilities
-    - Super fast screenshot engine
 
 Compatibility: Any
 
