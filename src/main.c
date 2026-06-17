@@ -58,13 +58,15 @@ inline void main(){
 
     while(aptMainLoop()){
 
-        Flash(false ,0x00, 0xFF, 0x0);
-
         svcSleepThread(10000000ULL);
+
+        irrstWaitForEvent(true);
 
         if(LOCK){
             continue;
         }
+
+        Flash(false ,0x00, 0xFF, 0x00);
 
         irrstScanInput();
         inputkey = irrstKeyshold();
@@ -72,9 +74,6 @@ inline void main(){
             PLGLDR__DisplayMenu(&menu);
         }
     }
-
-    // irrstWaitForEvent(true);
-
 }
 
 void deinit_libs(){
