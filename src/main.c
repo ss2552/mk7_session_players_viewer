@@ -1,9 +1,10 @@
 #include <3ds.h>
 #include <string.h>
 #include <stdio.h>
-#include "csvc.h"
-#include "plgldr.h"
 #include "menu.h"
+#include "csvc.h"
+#include "utils.h"
+#include "plgldr.h"
 
 Handle       g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle;
 u8           stack[STACK_SIZE] ALIGN(8);
@@ -71,6 +72,8 @@ void mainThread(){
     svcSignalEvent(g_continueGameEvent);
 
     memset(&menu, 0, sizeof(menu));
+
+    Flash(true);
 
     main();
 
