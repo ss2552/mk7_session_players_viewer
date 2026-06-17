@@ -7,8 +7,7 @@
 #include "plgldr.h"
 
 Handle       g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle;
-u8           mainstack[STACK_SIZE] ALIGN(8),
-             monitorstack[0xFF] ALIGN(8);
+u8 mainstack[STACK_SIZE] ALIGN(8), monitorstack[0xFF] ALIGN(8);
 
 Result      res;
 
