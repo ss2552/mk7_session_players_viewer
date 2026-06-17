@@ -7,7 +7,8 @@
 #include "plgldr.h"
 
 Handle       g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle;
-u8           stack[STACK_SIZE] ALIGN(8);
+u8           mainstack[STACK_SIZE] ALIGN(8),
+             monitorstack[0xFF] ALIGN(8);
 
 Result      res;
 
@@ -16,6 +17,8 @@ void init_libs(){
 }
 
 PluginMenu   menu;
+
+bool LOCK = false;
 
 void MonitorDeamon_Thread(){
 
@@ -31,9 +34,17 @@ void MonitorDeamon_Thread(){
                 case PLG_SLEEP_EXIT:
                 case PLG_ABOUT_TO_SWAP:
                     PLGLDR__Reply(event);
+                    continue;
                 case PLG_ABOUT_TO_EXIT:
                     break;
             }
+
+            LOCK = false;
+
+        }else{
+
+            LOCK = true;
+
         }
     }
 }
@@ -45,6 +56,13 @@ inline void main(){
     u32 inputkey = 0;
 
     while(aptMainLoop()){
+
+        svcSleepThread(10000000ULL);
+
+        if(LOCK){
+            continue;
+        }
+
         irrstScanInput();
         inputkey = irrstKeyshold();
         if(inputkey & KEY_ZL || inputkey & KEY_ZR){
@@ -92,8 +110,8 @@ void __entrypoint(int arg, void* temporaryStack){
     plgLdrInit();
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-    svcCreateThread(&g_mainThreadHandle, mainThread, 0, (u32 *)(stack + STACK_SIZE), 30, -1);
-    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0, (u32 *)(stack + STACK_SIZE), 31, -1);
+    svcCreateThread(&g_mainThreadHandle, mainThread, 0, (u32 *)(mainstack + sizeof(mainstack)), 30, -1);
+    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0, (u32 *)(monitorstack + sizeof(monitorstack)), 31, -1);
     svcWaitSynchronization(g_continueGameEvent, U64_MAX);
     svcCloseHandle(&g_continueGameEvent);
     svcCloseHandle(&g_monitor_ThreadHandle);
