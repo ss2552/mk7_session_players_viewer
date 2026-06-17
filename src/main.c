@@ -5,32 +5,35 @@
 #include "plgldr.h"
 #include "menu.h"
 
-static Handle       g_ThreadHandle;
-static Handle       g_continueGameEvent;
-static u8           stack[STACK_SIZE] ALIGN(8);
+Handle       g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle;
+u8           stack[STACK_SIZE] ALIGN(8);
 
-Result res;
+Result      res;
 
 void init_libs(){
    	irrstInit();
 }
 
-static PluginMenu   menu;
+PluginMenu   menu;
 
-inline s32 Thread(){
+void MonitorDeamon_Thread(){
 
-    res = svcWaitSynchronization(memLayoutChanged, 10000000ULL);
+    s32 event;
 
-    if(res == 0x09401BFE){
-        s32 event = PLGLDR__FetchEvent();
-        switch(event){
-            case PLG_SLEEP_ENTRY:
-            case PLG_SLEEP_EXIT:
-            case PLG_ABOUT_TO_SWAP:
-                PLGLDR__Reply(event);
-            case PLG_ABOUT_TO_EXIT:
+    while(true){
+        res = svcWaitSynchronization(memLayoutChanged, 10000000ULL);
+
+        if(res == 0x09401BFE){
+            event = PLGLDR__FetchEvent();
+            switch(event){
+                case PLG_SLEEP_ENTRY:
+                case PLG_SLEEP_EXIT:
+                case PLG_ABOUT_TO_SWAP:
+                    PLGLDR__Reply(event);
+                case PLG_ABOUT_TO_EXIT:
                     break;
             }
+        }
     }
 }
 
@@ -40,10 +43,12 @@ inline void main(){
 
     u32 inputkey = 0;
 
-    irrstScanInput();
-    inputkey = irrstKeyshold();
-    if(inputkey & KEY_ZL || inputkey & KEY_ZR){
-        PLGLDR__DisplayMenu(&menu);
+    while(aptMainLoop()){
+        irrstScanInput();
+        inputkey = irrstKeyshold();
+        if(inputkey & KEY_ZL || inputkey & KEY_ZR){
+            PLGLDR__DisplayMenu(&menu);
+        }
     }
 
     // irrstWaitForEvent(true);
@@ -61,33 +66,37 @@ void mainThread(){
 
     init_libs();
 
+    svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
+
     svcSignalEvent(g_continueGameEvent);
 
     memset(&menu, 0, sizeof(menu));
 
-    svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
-
     main();
 
-	   deinit_libs();
+    deinit_libs();
 
     svcExitThread();
 
 }
 
-int __entrypoint(int arg, void* temporaryStack){
-	
+void __entrypoint(int arg, void* temporaryStack){
+
+    (void)arg;
+    (void)temporaryStack;
+
     srvInit();
     plgLdrInit();
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-    svcCreateThread(&g_ThreadHandle, mainThread, 0, (u32 *)(stack + STACK_SIZE), 30, -1);
+    svcCreateThread(&g_mainThreadHandle, mainThread, 0, (u32 *)(stack + STACK_SIZE), 30, -1);
+    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0, (u32 *)(stack + STACK_SIZE), 31, -1);
     svcWaitSynchronization(g_continueGameEvent, U64_MAX);
-	svcCloseHandle(g_continueGameEvent);
+    svcCloseHandle(&g_continueGameEvent);
+    svcCloseHandle(&g_monitor_ThreadHandle);
+    svcCloseHandle(&g_mainThreadHandle);
 
     srvExit();
     plgLdrExit();
-
-    return 0;
 
 }
