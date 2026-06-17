@@ -1,6 +1,6 @@
 #include "utils.h"
 
-void     Flash(bool isTop, u32 color)
+void     Flash(bool isTop, u8 r, u8 g, u8 b)
 {
     u32 *addr;
 
@@ -10,7 +10,8 @@ void     Flash(bool isTop, u32 color)
         addr = 0x10202208;
     }
 
-    color |= 0x01000000;
+    u8 color = 0x01000000 | (b << 16) | (g << 8) | r;
+
     for (u32 i = 0; i < 64; i++)
     {
         REG32(addr) = color;
