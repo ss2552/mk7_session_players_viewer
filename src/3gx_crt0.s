@@ -54,3 +54,95 @@ ClrLoop:
 
     bx      lr
 
+
+
+/* generator for gemini pro
+    .arm
+    .text
+
+    bl srvInit
+    bl plgLdrInit
+
+    @ -------------------------------------------------------
+    @ 1. イベント作成
+    @ -------------------------------------------------------
+    ldr r0, =g_continueGameEvent
+    mov r1, #1
+    bl _svcCreateEvent
+
+    @ -------------------------------------------------------
+    @ 2. メインスレッド作成
+    @ -------------------------------------------------------
+    @ スタック引数の準備 (r0-r3に干渉しないよう、先にスタックへ直値で配置)
+    mov r12, #-1
+    str r12, [sp, #-4]!
+    mov r12, #30
+    str r12, [sp, #-4]!
+    
+    ldr r0, =g_mainThreadHandle
+    ldr r1, =mainThread
+    mov r2, #0
+    ldr r3, =mainstack_top
+    bl _svcCreateThread
+    add sp, sp, #8
+
+    @ -------------------------------------------------------
+    @ 3. モニタースレッド作成
+    @ -------------------------------------------------------
+    mov r12, #-1
+    str r12, [sp, #-4]!
+    mov r12, #31
+    str r12, [sp, #-4]!
+    
+    ldr r0, =g_monitor_ThreadHandle
+    ldr r1, =MonitorDeamon_Thread
+    mov r2, #0
+    ldr r3, =monitorstack_top
+    bl _svcCreateThread
+    add sp, sp, #8
+
+    @ -------------------------------------------------------
+    @ 4. 同期待ち & クローズ処理
+    @ -------------------------------------------------------
+    ldr r0, =g_continueGameEvent
+    mov r1, #0xFFFFFFFF
+    mov r2, #0xFFFFFFFF
+    bl _svcWaitSynchronization
+
+    ldr r0, =g_continueGameEvent
+    bl _svcCloseHandle
+
+    ldr r0, =g_monitor_ThreadHandle
+    bl _svcCloseHandle
+
+    ldr r0, =g_mainThreadHandle
+    bl _svcCloseHandle
+
+    @ -------------------------------------------------------
+    @ 5. 終了処理
+    @ -------------------------------------------------------
+    bl srvExit
+    bl plgLdrExit
+
+
+    @ =======================================================
+    @ SERVICE LABELS (SVC WRAPPERS)
+    @ =======================================================
+_svcCreateThread:
+    svc 0x08
+    bx lr
+
+_svcCreateEvent:
+    svc 0x17
+    bx lr
+
+_svcWaitSynchronization:
+    ldr r0, [r0]        @ ラベル側でポインタからハンドル値をデリファレンス
+    svc 0x18
+    bx lr
+
+_svcCloseHandle:
+    ldr r0, [r0]        @ ラベル側でポインタからハンドル値をデリファレンス
+    svc 0x23
+    bx lr
+*/
