@@ -14,8 +14,7 @@ jobs:
 
     - name: get 3gxtool
       run: |
-        curl -o 3gxtool https://gitlab.com/-/project/35893975/uploads/7cf27fcdc26921d9a6c5505c1e5bbcaa/3gxtool && \
-        chmod +x 3gxtool &% export PATH="$PATH:$(pwd)"
+        curl -o 3gxtool https://gitlab.com/-/project/35893975/uploads/7cf27fcdc26921d9a6c5505c1e5bbcaa/3gxtool && chmod +x 3gxtool && export PATH="$PATH:$(pwd)"
       
     - name: つくる
       run: make
