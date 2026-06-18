@@ -6,6 +6,6 @@
 
 void entry_menu(PluginMenu *menu){
 
-    strncpy(menu.title, "MarioKart7 plugin", MAX_BUFFER);
+    strncpy(menu->title, "MarioKart7 plugin", MAX_BUFFER);
 
 }
