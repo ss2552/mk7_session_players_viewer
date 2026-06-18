@@ -27,7 +27,9 @@ bool LOCK = false;
 
 void MonitorDeamon_Thread(void *arg){
 
-    Flash(false ,0x00, 0x00, 0xFF);
+    (void)arg;
+
+    // Flash(false ,0xFF, 0x00, 0x00);
 
     s32 event;
 
@@ -44,7 +46,8 @@ void MonitorDeamon_Thread(void *arg){
                     LOCK = true;
                     PLGLDR__Reply(event);
                     continue;
-                case PLG_ABOUT_TO_EXIT:
+                case PLG_ABOUT_TO_EXIT:;
+                    PLGLDR__Reply(event);
                     break;
                 default:
                     LOCK = false;
@@ -89,6 +92,8 @@ void deinit_libs(){
 }
 
 void mainThread(void *arg){
+
+    (void)arg;
 
     Flash(false ,0xFF, 0x00, 0xFF);
 
