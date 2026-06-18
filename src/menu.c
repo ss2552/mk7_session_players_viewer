@@ -1,8 +1,11 @@
 #include <3ds.h>
+#include <string.h>
+#include <stdio.h>
+#include "plgldr.h"
 #include "menu.h"
 
 void entry_menu(PluginMenu *menu){
 
-    menu->title = "MarioKart7 plugin";
+    strncpy(menu.title, "MarioKart7 plugin", MAX_BUFFER);
 
 }
