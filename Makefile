@@ -62,7 +62,7 @@ all: $(TARGET)-release.3gx $(TARGET)-debug.3gx
 
 $(TARGET)-release.3gx :
     @[ -d release] || mkdir -p release
-	@$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ BUILD_LIBS=" -lctru" WL=--strip-discarded,--strip-debug, \
+    @$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ BUILD_LIBS=" -lctru" WL=--strip-discarded,--strip-debug, \
 	BUILD_CFLAGS="-DNDEBUG=1 -O2 -fomit-frame-pointer" DEPSDIR=$(CURDIR)/release \
 	--no-print-directory -C release -f $(CURDIR)/Makefile
 
