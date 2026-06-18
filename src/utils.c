@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "types.h"
+#include <3ds.h>
 
 void Flash(bool isTop, u8 r, u8 g, u8 b){
     volatile u32 *addr;
