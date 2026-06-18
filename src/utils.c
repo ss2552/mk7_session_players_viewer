@@ -10,12 +10,15 @@ void Flash(bool isTop, u8 r, u8 g, u8 b){
         addr = (volatile u32 *)0x10202208;
     }
 
-    *addr |= 1 << 31;
-
-    u8 color = 0x01000000 | (b << 16) | (g << 8) | r;
+    /*
+     * Build the 32-bit color value and set the top (control) bit in the
+     * same write so it is not accidentally cleared by a smaller-store write.
+     */
+    u32 color = 0x01000000U | ((u32)b << 16) | ((u32)g << 8) | (u32)r;
+    u32 value = (1U << 31) | color;
 
     for (u32 i = 0; i < 64; i++){
-        *addr = color;
+        *addr = value;
         svcSleepThread(5000000);
     }
 
