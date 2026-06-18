@@ -15,7 +15,12 @@ void Flash(bool isTop, u8 r, u8 g, u8 b){
 
     u32 color = (1U << 31) |  0x01000000U | ((u32)b << 16) | ((u32)g << 8) | (u32)r;
 
-    PLGLDR__DisplayMessage((u32)addr, &color);
+    char title[10];
+    sprintf(title, "%x¥0", addr);
+    const char body[10];
+    sprintf(body, "%x¥0", color);
+
+    PLGLDR__DisplayMessage(&title, &body);
 
     /*
         
