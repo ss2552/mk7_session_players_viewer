@@ -66,7 +66,7 @@ $(TARGET)-release.3gx :
 	BUILD_CFLAGS="-DNDEBUG=1 -O2 -fomit-frame-pointer" DEPSDIR=$(CURDIR)/release \
 	--no-print-directory -C release -f $(CURDIR)/Makefile
 
-$(TARGET)-debug.3gx : debug
+$(TARGET)-debug.3gx :
     @[ -d debug] || mkdir -p debug
 	@$(MAKE) BUILD=debug OUTPUT=$(CURDIR)/$@ BUILD_LIBS="-lctrpfd -lctrud" BUILD_CFLAGS="-DDEBUG=1 -Og" G=-g \
 	DEPSDIR=$(CURDIR)/debug --no-print-directory -C debug -f $(CURDIR)/Makefile
