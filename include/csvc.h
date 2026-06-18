@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <types.h>
+#include "types.h"
 
 inline u32 PA_RWX(u32 addr) { return (addr == 0 ? 0 : (addr < 0x30000000 ? (u32)((addr) | (1u << 31)) : addr)); }
 #define PA_FROM_VA(addr) (PA_RWX(svcConvertVAToPA((void *)addr, false)))
