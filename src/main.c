@@ -25,29 +25,30 @@ PluginMenu   menu;
 
 bool LOCK = false;
 
-void MonitorDeamon_Thread(void *arg){
+void MonitorDeamon_Thread(void){
+
+    Flash(false ,0x00, 0x00, 0xFF);
 
     s32 event;
-    (void)arg;
 
     while(true){
 
-        Flash(false ,0x00, 0,0xFF);
-
         res = svcWaitSynchronization(memLayoutChanged, 10000000ULL);
         if(res == 0x09401BFE){
-
-            LOCK = false;
 
             event = PLGLDR__FetchEvent();
             switch(event){
                 case PLG_SLEEP_ENTRY:
                 case PLG_SLEEP_EXIT:
                 case PLG_ABOUT_TO_SWAP:
+                    LOCK = true;
                     PLGLDR__Reply(event);
                     continue;
                 case PLG_ABOUT_TO_EXIT:
                     break;
+                default:
+                    LOCK = false;
+
             }
         }else{
 
@@ -58,6 +59,8 @@ void MonitorDeamon_Thread(void *arg){
 }
 
 void main(){
+
+    Flash(false ,0x00, 0xFF, 0x00);
 
     entry_menu(&menu);
 
@@ -73,8 +76,6 @@ void main(){
             continue;
         }
 
-        Flash(false ,0x00, 0xFF, 0x00);
-
         irrstScanInput();
         inputkey = irrstKeysHeld();
         if(inputkey & KEY_ZL || inputkey & KEY_ZR){
@@ -87,12 +88,9 @@ void deinit_libs(){
     irrstExit();
 }
 
-void mainThread(void *arg){
+void mainThread(void){
 
     (void)arg;
-    
-    // __sync_init();
-    // __system_initSyscalls();
 
     init_libs();
 
@@ -101,8 +99,6 @@ void mainThread(void *arg){
     svcSignalEvent(g_continueGameEvent);
 
     memset(&menu, 0, sizeof(menu));
-
-    Flash(true, 0xFF, 0x00, 0xFF);
 
     main();
 
