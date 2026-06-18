@@ -23,10 +23,7 @@ ARCH		:= -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
 CFLAGS		:= -mword-relocations \
 			-ffunction-sections -fdata-sections -fno-strict-aliasing \
-			$(ARCH) $(BUILD_FLAGS) $(G)
-CFLAGS		+= $(INCLUDE) -D__3DS__ $(DEFINES)
-
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
+			$(ARCH) $(BUILD_FLAGS) $(G) $(INCLUDE) -D__3DS__ $(DEFINES)
 
 ASFLAGS		:= $(ARCH) $(G)
 LDFLAGS		:= -T $(TOPDIR)/3gx.ld $(ARCH) -Os -Wl,$(WL)--gc-sections,--section-start,.text=0x07000100
@@ -56,24 +53,18 @@ export INCLUDE	:= $(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 
 export LIBPATHS	:= $(foreach dir,$(LIBDIRS),-L $(dir)/lib)
 
-.PHONY: $(BUILD) relink all
+.PHONY: $(BUILD) all
 
 #---------------------------------------------------------------------------------
 # Main targets
 #---------------------------------------------------------------------------------
-all: $(TARGET)-release.3gx
+all: $(TARGET).3gx
 
-release:
-	@[ -d $@ ] || mkdir -p $@
-
-$(TARGET)-release.3gx : release
+$(TARGET).3gx :
+    @[ -d release] || mkdir -p release
 	@$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ BUILD_LIBS=" -lctru" WL=--strip-discarded,--strip-debug, \
 	BUILD_CFLAGS="-DNDEBUG=1 -O2 -fomit-frame-pointer" DEPSDIR=$(CURDIR)/release \
 	--no-print-directory -C release -f $(CURDIR)/Makefile
-
-relink:
-	@rm -f *.elf *.3gx
-	@$(MAKE)
 
 #---------------------------------------------------------------------------------
 else
