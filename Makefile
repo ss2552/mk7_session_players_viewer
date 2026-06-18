@@ -37,7 +37,7 @@ LIBDIRS		:= $(CTRULIB) $(PORTLIBS)
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 
 export VPATH	:= $(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
-				$(foreach dir,$(DATA),$(CURDIR)/$(dir))
+			$(foreach dir,$(DATA),$(CURDIR)/$(dir))
 
 export DEPSDIR	:= $(CURDIR)/$(BUILD)
 
@@ -48,8 +48,8 @@ export LD		:= $(CXX)
 export OFILES	:= $(CFILES:.c=.o) $(SFILES:.s=.o)
 
 export INCLUDE	:= $(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
-				$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-				-I$(CURDIR)/$(BUILD)
+			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+			-I$(CURDIR)/$(BUILD)
 
 export LIBPATHS	:= $(foreach dir,$(LIBDIRS),-L $(dir)/lib)
 
@@ -61,15 +61,15 @@ export LIBPATHS	:= $(foreach dir,$(LIBDIRS),-L $(dir)/lib)
 all: $(TARGET)-release.3gx $(TARGET)-debug.3gx
 
 $(TARGET)-release.3gx :
-    @[ -d release] || mkdir -p release
-    @$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ BUILD_LIBS=" -lctru" WL=--strip-discarded,--strip-debug, \
-	BUILD_CFLAGS="-DNDEBUG=1 -O2 -fomit-frame-pointer" DEPSDIR=$(CURDIR)/release \
-	--no-print-directory -C release -f $(CURDIR)/Makefile
+	@[ -d release] || mkdir -p release
+	@$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ BUILD_LIBS=" -lctru" WL=--strip-discarded,--strip-debug, \
+		BUILD_CFLAGS="-DNDEBUG=1 -O2 -fomit-frame-pointer" DEPSDIR=$(CURDIR)/release \
+		--no-print-directory -C release -f $(CURDIR)/Makefile
 
 $(TARGET)-debug.3gx :
-    @[ -d debug] || mkdir -p debug
+	@[ -d debug] || mkdir -p debug
 	@$(MAKE) BUILD=debug OUTPUT=$(CURDIR)/$@ BUILD_LIBS="-lctrpfd -lctrud" BUILD_CFLAGS="-DDEBUG=1 -Og" G=-g \
-	DEPSDIR=$(CURDIR)/debug --no-print-directory -C debug -f $(CURDIR)/Makefile
+		DEPSDIR=$(CURDIR)/debug --no-print-directory -C debug -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 else
