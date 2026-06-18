@@ -68,7 +68,7 @@ $(TARGET)-release.3gx :
 
 $(TARGET)-debug.3gx :
 	@[ -d debug] || mkdir -p debug
-	@$(MAKE) BUILD=debug OUTPUT=$(CURDIR)/$@ BUILD_LIBS="-lctrpfd -lctrud" BUILD_CFLAGS="-DDEBUG=1 -Og" G=-g \
+	@$(MAKE) BUILD=debug OUTPUT=$(CURDIR)/$@ BUILD_LIBS=" -lctrud" BUILD_CFLAGS="-DDEBUG=1 -Og" G=-g \
 		DEPSDIR=$(CURDIR)/debug --no-print-directory -C debug -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
