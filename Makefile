@@ -37,7 +37,7 @@ LIBDIRS		:= $(CTRULIB) $(PORTLIBS)
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 
 export VPATH	:= $(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
-			$(foreach dir,$(DATA),$(CURDIR)/$(dir))
+				$(foreach dir,$(DATA),$(CURDIR)/$(dir))
 
 export DEPSDIR	:= $(CURDIR)/$(BUILD)
 
@@ -48,8 +48,8 @@ export LD		:= $(CXX)
 export OFILES	:= $(CFILES:.c=.o) $(SFILES:.s=.o)
 
 export INCLUDE	:= $(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
-			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-			-I$(CURDIR)/$(BUILD)
+				$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+				-I$(CURDIR)/$(BUILD)
 
 export LIBPATHS	:= $(foreach dir,$(LIBDIRS),-L $(dir)/lib)
 
