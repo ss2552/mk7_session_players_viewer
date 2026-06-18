@@ -1,3 +1,4 @@
 #pragma once
+#include "plgldr.h"
 
-void entry_menu(Plugin *menu);
+void entry_menu(PluginMenu *menu);
