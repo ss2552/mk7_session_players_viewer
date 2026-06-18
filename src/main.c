@@ -3,13 +3,14 @@
 #include <stdio.h>
 #include "menu.h"
 #include "csvc.h"
+#include "types.h"
 #include "utils.h"
 #include "plgldr.h"
 
-Handle       g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle;
+Handle   g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle, memLayoutChanged;
 u8 mainstack[0x1000] ALIGN(8), monitorstack[0xFF] ALIGN(8);
 
-Result      res;
+Result   res;
 
 void init_libs(){
    	irrstInit();
