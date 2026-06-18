@@ -10,13 +10,11 @@ export TOPDIR ?= $(CURDIR)
 include $(DEVKITARM)/3ds_rules
 
 TARGET		:= 	$(notdir $(CURDIR))
-INCLUDES	:= 	Includes \
-				Includes/lodepng \
-				../Library/include
+INCLUDES	:= 	includes
 
-SOURCES 	:= 	Sources
+SOURCES 	:= 	src
 
-PSF 		:= 	$(notdir $(TOPDIR)).plgInfo
+PSF 		:= 	mk7.plgInfo
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -63,15 +61,12 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L $(dir)/lib)
 
-.PHONY: $(BUILD) clean re relink all
+.PHONY: $(BUILD) relink all
 
 #---------------------------------------------------------------------------------
-all: $(TARGET)-release.3gx $(TARGET)-debug.3gx
+all: $(TARGET)-release.3gx
 
 release:
-	@[ -d $@ ] || mkdir -p $@
-
-debug:
 	@[ -d $@ ] || mkdir -p $@
 
 $(TARGET)-release.3gx : release
@@ -79,16 +74,7 @@ $(TARGET)-release.3gx : release
 	BUILD_CFLAGS="-DNDEBUG=1 -O2 -fomit-frame-pointer" DEPSDIR=$(CURDIR)/release \
 	--no-print-directory -C release	-f $(CURDIR)/Makefile
 
-$(TARGET)-debug.3gx : debug
-	@$(MAKE) BUILD=debug OUTPUT=$(CURDIR)/$@ BUILD_LIBS=" -lctrud" BUILD_CFLAGS="-DDEBUG=1 -Og" G=-g \
-	DEPSDIR=$(CURDIR)/debug --no-print-directory -C debug -f $(CURDIR)/Makefile
-
 #---------------------------------------------------------------------------------
-clean:
-	@echo clean ...
-	@rm -fr release debug *.elf *.3gx
-
-re: clean all
 
 relink:
 	@rm -f *.elf *.3gx
@@ -118,6 +104,9 @@ $(basename $(OUTPUT)).elf : $(OFILES)
 #---------------------------------------------------------------------------------
 %.3gx: %.elf
 	@echo creating $(notdir $@)
+    @curl -o 3gxtool https://gitlab.com/-/project/35893975/uploads/7cf27fcdc26921d9a6c5505c1e5bbcaa/3gxtool
+    @chmod +x 3gxtool
+    @ls
 	@3gxtool -s $^ $(TOPDIR)/$(PSF) $@
 
 -include $(DEPENDS)
