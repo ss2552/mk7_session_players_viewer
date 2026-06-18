@@ -25,7 +25,7 @@ PluginMenu   menu;
 
 bool LOCK = false;
 
-void MonitorDeamon_Thread(void){
+void MonitorDeamon_Thread(void *arg){
 
     Flash(false ,0x00, 0x00, 0xFF);
 
@@ -88,7 +88,7 @@ void deinit_libs(){
     irrstExit();
 }
 
-void mainThread(){
+void mainThread(void *arg){
 
     Flash(false ,0xFF, 0x00, 0xFF);
 
@@ -110,15 +110,14 @@ void mainThread(){
 
 void __entrypoint(int arg, void* temporaryStack){
 
-    (void)arg;
     (void)temporaryStack;
 
     srvInit();
     plgLdrInit();
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-    svcCreateThread(&g_ThreadHandle, mainThread, null, (u32 *)(&mainstack + 0x1000), 0x1A, 0);
-    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, null, (u32 *)(&monitorstack + 0xFF), 0x1B, 0);
+    svcCreateThread(&g_ThreadHandle, mainThread, arg, (u32 *)(&mainstack + 0x1000), 0x1A, 0);
+    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, aeg, (u32 *)(&monitorstack + 0xFF), 0x1B, 0);
     svcWaitSynchronization(g_continueGameEvent, U64_MAX);
     svcCloseHandle(g_continueGameEvent);
     svcCloseHandle(g_monitor_ThreadHandle);
