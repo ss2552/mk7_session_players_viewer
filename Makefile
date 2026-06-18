@@ -11,7 +11,7 @@ include $(DEVKITARM)/3ds_rules
 
 TARGET		:= $(notdir $(CURDIR))
 INCLUDES	:= include
-SOURCES		:= src
+SOURCES		:= src src/ctrulibExtension
 PSF			:= mk7.plgInfo
 3GXTOOL		:= $(CURDIR)/3gxtool
 3GXTOOL_URL	:= https://gitlab.com/-/project/35893975/uploads/7cf27fcdc26921d9a6c5505c1e5bbcaa/3gxtool
