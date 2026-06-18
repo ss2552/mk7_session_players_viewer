@@ -53,18 +53,23 @@ export INCLUDE	:= $(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 
 export LIBPATHS	:= $(foreach dir,$(LIBDIRS),-L $(dir)/lib)
 
-.PHONY: $(BUILD) all
+.PHONY: $(BUILD) all $(TARGET)-release.3gx $(TARGET)-debug.3gx
 
 #---------------------------------------------------------------------------------
 # Main targets
 #---------------------------------------------------------------------------------
-all: $(TARGET).3gx
+all: $(TARGET)-release.3gx $(TARGET)-debug.3gx
 
-$(TARGET).3gx :
+$(TARGET)-release.3gx :
     @[ -d release] || mkdir -p release
 	@$(MAKE) BUILD=release OUTPUT=$(CURDIR)/$@ BUILD_LIBS=" -lctru" WL=--strip-discarded,--strip-debug, \
 	BUILD_CFLAGS="-DNDEBUG=1 -O2 -fomit-frame-pointer" DEPSDIR=$(CURDIR)/release \
 	--no-print-directory -C release -f $(CURDIR)/Makefile
+
+$(TARGET)-debug.3gx : debug
+    @[ -d debug] || mkdir -p debug
+	@$(MAKE) BUILD=debug OUTPUT=$(CURDIR)/$@ BUILD_LIBS="-lctrpfd -lctrud" BUILD_CFLAGS="-DDEBUG=1 -Og" G=-g \
+	DEPSDIR=$(CURDIR)/debug --no-print-directory -C debug -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 else
