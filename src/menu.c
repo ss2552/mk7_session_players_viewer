@@ -3,6 +3,6 @@
 
 void entry_menu(PluginMenu *menu){
 
-    menu.title = "MarioKart7 plugin";
+    menu->title = "MarioKart7 plugin";
 
 }
