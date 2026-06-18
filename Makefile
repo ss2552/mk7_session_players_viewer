@@ -104,10 +104,10 @@ $(basename $(OUTPUT)).elf : $(OFILES)
 #---------------------------------------------------------------------------------
 %.3gx: %.elf
 	@echo creating $(notdir $@)
-    @curl -o 3gxtool https://gitlab.com/-/project/35893975/uploads/7cf27fcdc26921d9a6c5505c1e5bbcaa/3gxtool
-    @chmod +x 3gxtool
+    @curl -o 3gxtool "https://gitlab.com/-/project/35893975/uploads/7cf27fcdc26921d9a6c5505c1e5bbcaa/3gxtool"
+    @chmod +x ./3gxtool
     @ls
-	@3gxtool -s $^ $(TOPDIR)/$(PSF) $@
+	@./3gxtool -s $^ $(TOPDIR)/$(PSF) $@
 
 -include $(DEPENDS)
 
