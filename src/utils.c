@@ -1,4 +1,5 @@
 #include <3ds.h>
+#include <stdio.h>
 #include "utils.h"
 #include "types.h"
 #include "plgldr.h"
@@ -17,10 +18,10 @@ void Flash(bool isTop, u8 r, u8 g, u8 b){
 
     char title[10];
     sprintf(title, "%x¥0", addr);
-    const char body[10];
+    char body[10];
     sprintf(body, "%x¥0", color);
 
-    PLGLDR__DisplayMessage(&title, &body);
+    PLGLDR__DisplayMessage(title, body);
 
     /*
         
