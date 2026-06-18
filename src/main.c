@@ -12,6 +12,11 @@ u8 mainstack[0x1000] ALIGN(8), monitorstack[0xFF] ALIGN(8);
 
 Result   res;
 
+
+
+s32     PLGLDR__FetchEvent(void);
+void    PLGLDR__Reply(s32 event);
+
 void init_libs(){
    	irrstInit();
 }
