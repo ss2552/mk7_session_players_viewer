@@ -20,9 +20,10 @@ PluginMenu   menu;
 
 bool LOCK = false;
 
-void MonitorDeamon_Thread(){
+void MonitorDeamon_Thread(void *arg){
 
     s32 event;
+    (void)arg;
 
     while(true){
 
@@ -51,7 +52,7 @@ void MonitorDeamon_Thread(){
     }
 }
 
-inline void main(){
+void main(){
 
     entry_menu(&menu);
 
@@ -70,7 +71,7 @@ inline void main(){
         Flash(false ,0x00, 0xFF, 0x00);
 
         irrstScanInput();
-        inputkey = irrstKeyshold();
+        inputkey = irrstKeysHeld();
         if(inputkey & KEY_ZL || inputkey & KEY_ZR){
             PLGLDR__DisplayMenu(&menu);
         }
@@ -81,8 +82,10 @@ void deinit_libs(){
     irrstExit();
 }
 
-void mainThread(){
+void mainThread(void *arg){
 
+    (void)arg;
+    
     // __sync_init();
     // __system_initSyscalls();
 
@@ -113,12 +116,12 @@ void __entrypoint(int arg, void* temporaryStack){
     plgLdrInit();
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-    svcCreateThread(&g_mainThreadHandle, mainThread, arg, (u32 *)(mainstack + 0x1000), 0x1A, 0);
+    svcCreateThread(&g_ThreadHandle, mainThread, arg, (u32 *)(mainstack + 0x1000), 0x1A, 0);
     svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0x00, (u32 *)(monitorstack + 0x1000), 0x1B, 0);
     svcWaitSynchronization(g_continueGameEvent, U64_MAX);
-    svcCloseHandle(&g_continueGameEvent);
-    svcCloseHandle(&g_monitor_ThreadHandle);
-    svcCloseHandle(&g_mainThreadHandle);
+    svcCloseHandle(g_continueGameEvent);
+    svcCloseHandle(g_monitor_ThreadHandle);
+    svcCloseHandle(g_ThreadHandle);
 
     srvExit();
     plgLdrExit();
