@@ -1,6 +1,6 @@
+#include <3ds.h>
 #include "utils.h"
 #include "types.h"
-#include <3ds.h>
 
 void Flash(bool isTop, u8 r, u8 g, u8 b){
     volatile u32 *addr;
@@ -11,10 +11,6 @@ void Flash(bool isTop, u8 r, u8 g, u8 b){
         addr = (volatile u32 *)0x10202208;
     }
 
-    /*
-     * Build the 32-bit color value and set the top (control) bit in the
-     * same write so it is not accidentally cleared by a smaller-store write.
-     */
     u32 color = 0x01000000U | ((u32)b << 16) | ((u32)g << 8) | (u32)r;
     u32 value = (1U << 31) | color;
 
