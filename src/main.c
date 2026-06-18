@@ -52,7 +52,7 @@ void MonitorDeamon_Thread(){
 
 inline void main(){
 
-    init_menu();
+    entry_menu(&menu);
 
     u32 inputkey = 0;
 
