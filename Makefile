@@ -10,7 +10,7 @@ export TOPDIR ?= $(CURDIR)
 include $(DEVKITARM)/3ds_rules
 
 TARGET		:= $(notdir $(CURDIR))
-INCLUDES	:= includes
+INCLUDES	:= include
 SOURCES		:= src
 PSF			:= mk7.plgInfo
 3GXTOOL		:= $(CURDIR)/3gxtool
