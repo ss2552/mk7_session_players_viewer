@@ -121,8 +121,8 @@ void __entrypoint(int arg, void* temporaryStack){
     plgLdrInit();
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-    svcCreateThread(&g_ThreadHandle, mainThread, arg, (u32 *)(mainstack + 0x1000), 0x1A, 0);
-    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0x00, (u32 *)(monitorstack + 0x1000), 0x1B, 0);
+    svcCreateThread(&g_ThreadHandle, mainThread, arg, (u32 *)(&mainstack + 0x1000), 0x1A, 0);
+    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0x00, (u32 *)(&monitorstack + 0xFF), 0x1B, 0);
     svcWaitSynchronization(g_continueGameEvent, U64_MAX);
     svcCloseHandle(g_continueGameEvent);
     svcCloseHandle(g_monitor_ThreadHandle);
