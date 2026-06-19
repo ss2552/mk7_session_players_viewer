@@ -1,7 +1,7 @@
 name: Deploy 3gx to gh-pages
 
 permissions:
-  contents: read
+  contents: write # gh-pagesブランチへのプッシュ用に read から write に変更
   pages: write
   actions: read
 
@@ -52,16 +52,19 @@ jobs:
             rm "$tmpfile"
           done < /tmp/artifact_urls.txt
 
-      - name: Collect .3gx files
+      - name: Collect and rename .3gx files
         run: |
           mkdir -p publish
-          # Copy any .3gx files from extracted artifacts to publish dir
-          find artifacts -type f -name '*.3gx' -exec cp {} publish/ \;
-
-          if [ -z "$(ls -A publish || true)" ]; then
+          
+          # 見つかった .3gx ファイルを、指定されたファイル名で publish ディレクトリにコピー
+          TARGET_FILE=$(find artifacts -type f -name '*.3gx' | head -n 1)
+          
+          if [ -z "$TARGET_FILE" ]; then
             echo "No .3gx files found in artifacts. Nothing to publish."
             exit 0
           fi
+          
+          cp "$TARGET_FILE" publish/mk7_session_players_viewer-debug.3gx
 
           echo "Files to publish:"
           ls -la publish
