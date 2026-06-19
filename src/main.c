@@ -12,7 +12,7 @@
 Handle   g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle, memLayoutChanged;
 u8 mainstack[MAIN_THREAD_STACK_SIZE] ALIGN(8),  monitorstack[MONITOR_THREAD_STACK_SIZE] ALIGN(8);
 
-#define SECONDS(x) ((u64)(x) * 1000000000ULL)
+#define SEC(x) ((u64)(x) * 1000000000ULL)
 
 
 Result   res;
