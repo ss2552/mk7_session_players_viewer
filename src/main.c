@@ -28,7 +28,9 @@ PluginMenu   menu;
 bool LOCK = false;
 bool is_monitorring = false;
 
-void MonitorDeamon_Thread(void _){
+void MonitorDeamon_Thread(void *arg){
+
+    arg = *arg;
 
     // Flash(false ,0xFF, 0x00, 0x00);
 
@@ -95,7 +97,8 @@ void deinit_libs(){
     irrstExit();
 }
 
-void mainThread(void _){
+void mainThread(void *arg){
+    arg = *arg;
 
     Flash(false ,0xFF, 0x00, 0xFF);
 
