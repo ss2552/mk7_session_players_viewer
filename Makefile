@@ -58,7 +58,7 @@ export LIBPATHS	:= $(foreach dir,$(LIBDIRS),-L $(dir)/lib)
 #---------------------------------------------------------------------------------
 # Main targets
 #---------------------------------------------------------------------------------
-all: $(TARGET)-release.3gx $(TARGET)-debug.3gx
+all: $(TARGET)-debug.3gx
 
 $(TARGET)-release.3gx :
 	@[ -d release] || mkdir -p release
