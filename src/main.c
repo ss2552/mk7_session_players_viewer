@@ -8,7 +8,7 @@
 #include "plgldr.h"
 
 #define MAIN_THREAD_STACK_SIZE 0x1000
-#define MONITOR_THREAD_STACK_SIZE 0xFF
+#define MONITOR_THREAD_STACK_SIZE 0x1000
 Handle   g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle, memLayoutChanged;
 u8 mainstack[MAIN_THREAD_STACK_SIZE] ALIGN(8),  monitorstack[MONITOR_THREAD_STACK_SIZE] ALIGN(8);
 
@@ -105,7 +105,7 @@ void mainThread(void *arg){
     
     svcSignalEvent(g_continueGameEvent);
     
-    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0xDEB000002, (u32 *)(&monitorstack + MONITOR_THREAD_STACK_SIZE), 0x1A, 0);
+    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0xDEB000002, (u32 *)(&monitorstack[MONITOR_THREAD_STACK_SIZE]), 0x1A, 0);
 
     main();
 
@@ -126,7 +126,7 @@ void __entrypoint(int arg, void* temporaryStack){
     plgLdrInit();
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-    svcCreateThread(&g_ThreadHandle, mainThread, 0xDEB00001, (u32 *)(&mainstack + MAIN_THREAD_STACK_SIZE), 0x1A, 0);
+    svcCreateThread(&g_ThreadHandle, mainThread, 0xDEB00001, (u32 *)(&mainstack[MAIN_THREAD_STACK_SIZE]), 0x1A, 0);
     svcWaitSynchronization(g_continueGameEvent, U64_MAX);
     svcCloseHandle(g_continueGameEvent);
 
