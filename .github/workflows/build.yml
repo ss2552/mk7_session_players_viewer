@@ -1,24 +1,73 @@
-name: さんじーえっくすのさくせい
+name: Deploy 3gx to gh-pages
+
+permissions:
+  contents: read
+  pages: write
+  actions: read
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    # Trigger after any workflow run completes.
+    types: [completed]
 
 jobs:
-  build:
-
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    container: devkitpro/devkitarm
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Show context
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Triggering workflow run id: ${{ github.event.workflow_run.id }}"
 
-    - name: つくる
-      run: make
+      - name: Download and extract artifacts from triggering run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
 
-    - name: あげる
-      uses: actions/upload-artifact@v4
-      with:
-        name: out
-        path: |
-          ./mk7_session_players_viewer-release.3gx
-          ./mk7_session_players_viewer-debug.3gx 
+          run_id=${{ github.event.workflow_run.id }}
+          repo="${{ github.repository }}"
+
+          echo "Listing artifacts for run $run_id"
+          api_url="https://api.github.com/repos/$repo/actions/runs/$run_id/artifacts"
+
+          response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$api_url")
+
+          # Extract archive_download_url for each artifact (if any)
+          echo "$response" | jq -r '.artifacts[]?.archive_download_url' > /tmp/artifact_urls.txt || true
+
+          if [ ! -s /tmp/artifact_urls.txt ]; then
+            echo "No artifacts found for run $run_id. Nothing to publish."
+            exit 0
+          fi
+
+          mkdir -p artifacts
+          while IFS= read -r url; do
+            echo "Downloading artifact: $url"
+            tmpfile=$(mktemp)
+            curl -L -H "Authorization: token $GITHUB_TOKEN" -o "$tmpfile" "$url"
+            unzip -o "$tmpfile" -d artifacts
+            rm "$tmpfile"
+          done < /tmp/artifact_urls.txt
+
+      - name: Collect .3gx files
+        run: |
+          mkdir -p publish
+          # Copy any .3gx files from extracted artifacts to publish dir
+          find artifacts -type f -name '*.3gx' -exec cp {} publish/ \;
+
+          if [ -z "$(ls -A publish || true)" ]; then
+            echo "No .3gx files found in artifacts. Nothing to publish."
+            exit 0
+          fi
+
+          echo "Files to publish:"
+          ls -la publish
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./publish
