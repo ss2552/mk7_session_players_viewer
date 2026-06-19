@@ -1,71 +1,49 @@
-name: Deploy 3gx to gh-pages
-
-permissions:
-  contents: write # gh-pagesブランチへのプッシュ用に read から write に変更
-  pages: write
-  actions: read
+name: さんじーえっくすのさくせい
 
 on:
-  workflow_run:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
 
 jobs:
-  deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  build:
     runs-on: ubuntu-latest
+    container:
+      image: devkitpro/devkitarm:latest
+      options: --user root
 
     steps:
-      - name: Show context
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
         run: |
-          echo "Repository: ${{ github.repository }}"
-          echo "Triggering workflow run id: ${{ github.event.workflow_run.id }}"
+          apt-get update && apt-get install -y libcurl4-openssl-dev
+          dkp-pacman -Syu --noconfirm
+          dkp-pacman -S 3ds-curl 3ds-dev --noconfirm
 
-      - name: Download and extract artifacts from triggering run
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
         run: |
-          set -euo pipefail
+          make
 
-          run_id=${{ github.event.workflow_run.id }}
-          repo="${{ github.repository }}"
-
-          echo "Listing artifacts for run $run_id"
-          api_url="https://api.github.com/repos/$repo/actions/runs/$run_id/artifacts"
-
-          response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$api_url")
-
-          # Extract archive_download_url for each artifact (if any)
-          echo "$response" | jq -r '.artifacts[]?.archive_download_url' > /tmp/artifact_urls.txt || true
-
-          if [ ! -s /tmp/artifact_urls.txt ]; then
-            echo "No artifacts found for run $run_id. Nothing to publish."
-            exit 0
-          fi
-
-          mkdir -p artifacts
-          while IFS= read -r url; do
-            echo "Downloading artifact: $url"
-            tmpfile=$(mktemp)
-            curl -L -H "Authorization: token $GITHUB_TOKEN" -o "$tmpfile" "$url"
-            unzip -o "$tmpfile" -d artifacts
-            rm "$tmpfile"
-          done < /tmp/artifact_urls.txt
-
-      - name: Collect and rename .3gx files
+      - name: Prepare for deployment
         run: |
           mkdir -p publish
-          
-          # 見つかった .3gx ファイルを、指定されたファイル名で publish ディレクトリにコピー
-          TARGET_FILE=$(find artifacts -type f -name '*.3gx' | head -n 1)
-          
-          if [ -z "$TARGET_FILE" ]; then
-            echo "No .3gx files found in artifacts. Nothing to publish."
-            exit 0
+          if [ -f ./mk7_session_players_viewer-debug.3gx ]; then
+            cp ./mk7_session_players_viewer-debug.3gx publish/mk7_session_players_viewer-debug.3gx
+          elif [ -f ./mk7_session_players_viewer-release.3gx ]; then
+            cp ./mk7_session_players_viewer-release.3gx publish/mk7_session_players_viewer-debug.3gx
+          else
+            TARGET_FILE=$(find . -maxdepth 1 -type f -name '*.3gx' | head -n 1)
+            if [ -n "$TARGET_FILE" ]; then
+              cp "$TARGET_FILE" publish/mk7_session_players_viewer-debug.3gx
+            else
+              echo "Error: .3gx file not found."
+              exit 1
+            fi
           fi
-          
-          cp "$TARGET_FILE" publish/mk7_session_players_viewer-debug.3gx
-
-          echo "Files to publish:"
-          ls -la publish
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
