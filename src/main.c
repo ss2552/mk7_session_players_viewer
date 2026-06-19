@@ -26,7 +26,7 @@ void init_libs(){
 PluginMenu   menu;
 
 bool LOCK = false;
-bool true_monitoring = false;
+bool is_monitorring = false;
 
 void MonitorDeamon_Thread(void _){
 
@@ -34,7 +34,7 @@ void MonitorDeamon_Thread(void _){
 
     svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
 
-    true_monitoring = true;
+    is_monitorring = true;
 
     s32 event;
 
@@ -61,7 +61,7 @@ void MonitorDeamon_Thread(void _){
     }
 
 e:
-    true_monitoring = false;
+    is_monitorring = false;
     Flash(false ,0xFF, 0x00, 0x00);
     svcExitThread();
 
@@ -75,7 +75,7 @@ void main(){
 
     u32 inputkey = 0;
 
-    while(aptMainLoop() || true_monitoring){
+    while(is_monitorring || aptMainLoop()){
 
         svcSleepThread(10000000ULL);
 
