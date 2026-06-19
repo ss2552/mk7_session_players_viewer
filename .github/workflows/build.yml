@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update && apt-get install -y libcurl4-openssl-dev
-          dkp-pacman -Syu --noconfirm
-          dkp-pacman -S 3ds-curl 3ds-dev --noconfirm
+          # dkp-pacman の実行は403エラーになるため削除。
+          # 必要な 3ds-dev と 3ds-curl はコンテナに内蔵されています。
 
       - name: Build
         run: |
