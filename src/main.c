@@ -30,7 +30,7 @@ bool is_monitorring = false;
 
 void MonitorDeamon_Thread(void *arg){
 
-    arg = *arg;
+    // volatile arg = *arg;
 
     // Flash(false ,0xFF, 0x00, 0x00);
 
@@ -98,7 +98,8 @@ void deinit_libs(){
 }
 
 void mainThread(void *arg){
-    arg = *arg;
+
+    // volatile arg = *arg;
 
     Flash(false ,0xFF, 0x00, 0xFF);
 
