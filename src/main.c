@@ -48,7 +48,7 @@ void MonitorDeamon_Thread(void _){
                     continue;
                 case PLG_ABOUT_TO_EXIT:;
                     PLGLDR__Reply(event);
-                    break;
+                    goto e;
                 default:
                     LOCK = false;
             }
@@ -56,6 +56,8 @@ void MonitorDeamon_Thread(void _){
             LOCK = true;
         }
     }
+
+e:
 
     Flash(false ,0xFF, 0x00, 0x00);
     svcExitThread();
