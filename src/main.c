@@ -12,6 +12,9 @@
 Handle   g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle, memLayoutChanged;
 u8 mainstack[MAIN_THREAD_STACK_SIZE] ALIGN(8),  monitorstack[MONITOR_THREAD_STACK_SIZE] ALIGN(8);
 
+#define SECONDS(x) ((u64)(x) * 1000000000ULL)
+
+
 Result   res;
 
 
@@ -50,7 +53,6 @@ void MonitorDeamon_Thread(void *arg){
                     PLGLDR__Reply(event);
                     continue;
                 case PLG_ABOUT_TO_EXIT:;
-                    PLGLDR__Reply(event);
                     goto e;
                 default:
                     LOCK = false;
@@ -61,6 +63,7 @@ void MonitorDeamon_Thread(void *arg){
     }
 
 e:
+    svcSleepThread(SEC(5));
     is_monitorring = false;
     Flash(false ,0xFF, 0x00, 0x00);
     svcExitThread();
@@ -108,6 +111,8 @@ void mainThread(void *arg){
     svcSignalEvent(g_continueGameEvent);
 
     Flash(false ,0xFF, 0x00, 0xFF);
+
+    svcSleepThread(SEC(5));
 
     main();
 
