@@ -99,8 +99,6 @@ void mainThread(void *arg){
 
     // volatile arg = *arg;
 
-    Flash(false ,0xFF, 0x00, 0xFF);
-
     init_libs();
 
     memset(&menu, 0, sizeof(menu));
@@ -108,7 +106,9 @@ void mainThread(void *arg){
     svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0x2BED, (u32 *)(monitorstack + MONITOR_THREAD_STACK_SIZE), 0x1A, 0);
 
     svcSignalEvent(g_continueGameEvent);
-    
+
+    Flash(false ,0xFF, 0x00, 0xFF);
+
     main();
 
     deinit_libs();
