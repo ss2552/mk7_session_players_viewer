@@ -79,8 +79,6 @@ void main(){
 
         svcSleepThread(10000000ULL);
 
-        irrstWaitForEvent(true);
-
         if(LOCK){
             continue;
         }
