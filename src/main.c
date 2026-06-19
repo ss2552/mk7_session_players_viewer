@@ -106,7 +106,7 @@ void mainThread(void _){
     
     svcSignalEvent(g_continueGameEvent);
     
-    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0x2BED, (u32 *)(&monitorstack[MONITOR_THREAD_STACK_SIZE]), 0x1A, 0);
+    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0x2BED, (u32 *)(monitorstack + MONITOR_THREAD_STACK_SIZE), 0x1A, 0);
 
     main();
 
@@ -126,7 +126,7 @@ void __entrypoint(int arg, void* temporaryStack){
     plgLdrInit();
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-    svcCreateThread(&g_ThreadHandle, mainThread, 0x1BED, (u32 *)(&mainstack[MAIN_THREAD_STACK_SIZE]), 0x1A, 0);
+    svcCreateThread(&g_ThreadHandle, mainThread, 0x1BED, (u32 *)(mainstack + MAIN_THREAD_STACK_SIZE), 0x1A, 0);
     svcWaitSynchronization(g_continueGameEvent, U64_MAX);
     svcCloseHandle(g_continueGameEvent);
 
