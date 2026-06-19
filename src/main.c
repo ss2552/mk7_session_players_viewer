@@ -34,8 +34,6 @@ void MonitorDeamon_Thread(void *arg){
 
     // Flash(false ,0xFF, 0x00, 0x00);
 
-    svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
-
     is_monitorring = true;
 
     s32 event;
@@ -106,13 +104,11 @@ void mainThread(void *arg){
     init_libs();
 
     memset(&menu, 0, sizeof(menu));
-
-    // 待機
-    
-    svcSignalEvent(g_continueGameEvent);
     
     svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, 0x2BED, (u32 *)(monitorstack + MONITOR_THREAD_STACK_SIZE), 0x1A, 0);
 
+    svcSignalEvent(g_continueGameEvent);
+    
     main();
 
     deinit_libs();
@@ -129,6 +125,8 @@ void __entrypoint(int arg, void* temporaryStack){
 
     srvInit();
     plgLdrInit();
+
+    svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
     svcCreateThread(&g_ThreadHandle, mainThread, 0x1BED, (u32 *)(mainstack + MAIN_THREAD_STACK_SIZE), 0x1A, 0);
