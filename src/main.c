@@ -7,8 +7,10 @@
 #include "utils.h"
 #include "plgldr.h"
 
+#define MAIN_THREAD_STACK_SIZE 0x1000
+#define MONITOR_THREAD_STACK_SIZE 0xFF
 Handle   g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle, memLayoutChanged;
-u8 mainstack[0x1000] ALIGN(8), monitorstack[0xFF] ALIGN(8);
+u8 mainstack[MAIN_THREAD_STACK_SIZE] ALIGN(8),  monitorstack[MONITOR_THREAD_STACK_SIZE] ALIGN(8);
 
 Result   res;
 
@@ -31,13 +33,16 @@ void MonitorDeamon_Thread(void *arg){
 
     // Flash(false ,0xFF, 0x00, 0x00);
 
+    svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
+
+    // 待機
+    svcSignalEvent(g_continueGameEvent);
+
     s32 event;
 
     while(true){
-
         res = svcWaitSynchronization(memLayoutChanged, 10000000ULL);
         if(res == 0x09401BFE){
-
             event = PLGLDR__FetchEvent();
             switch(event){
                 case PLG_SLEEP_ENTRY:
@@ -51,12 +56,9 @@ void MonitorDeamon_Thread(void *arg){
                     break;
                 default:
                     LOCK = false;
-
             }
         }else{
-
             LOCK = true;
-
         }
     }
 }
@@ -99,11 +101,9 @@ void mainThread(void *arg){
 
     init_libs();
 
-    svcControlProcess(CUR_PROCESS_HANDLE, PROCESSOP_GET_ON_MEMORY_CHANGE_EVENT, (u32)&memLayoutChanged, 0);
-
-    svcSignalEvent(g_continueGameEvent);
-
     memset(&menu, 0, sizeof(menu));
+
+    // 待機
 
     main();
 
@@ -121,12 +121,10 @@ void __entrypoint(int arg, void* temporaryStack){
     plgLdrInit();
 
     svcCreateEvent(&g_continueGameEvent, RESET_ONESHOT);
-    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, arg, (u32 *)(&monitorstack + sizeof(monitorstack)), 0x1A, 0);
-    svcCreateThread(&g_ThreadHandle, mainThread, arg, (u32 *)(&mainstack + sizeof(mainstack)), 0x19, 0);
+    svcCreateThread(&g_monitor_ThreadHandle, MonitorDeamon_Thread, arg, (u32 *)(&monitorstack + MONITOR_THREAD_STACK_SIZE), 0x1A, 0);
+    svcCreateThread(&g_ThreadHandle, mainThread, arg, (u32 *)(&mainstack + MAIN_THREAD_STACK_SIZE), 0x1A, 0);
     svcWaitSynchronization(g_continueGameEvent, U64_MAX);
     svcCloseHandle(g_continueGameEvent);
-    svcCloseHandle(g_monitor_ThreadHandle);
-    svcCloseHandle(g_ThreadHandle);
 
     srvExit();
     plgLdrExit();
