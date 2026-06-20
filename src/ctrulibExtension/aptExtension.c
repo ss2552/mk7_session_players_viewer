@@ -1,4 +1,4 @@
-#define <3ds/services/apt.h>
+#include <3ds/services/apt.h>
 #include "types.h"
 
 u32 __apt_appid = APPID_APPLICATION;
