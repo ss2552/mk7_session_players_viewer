@@ -108,7 +108,7 @@ void __main(){
             Flash(true ,0xFF, 0xFF, 0xFF);
             Flash(false ,0xFF, 0xFF, 0xFF);
             PLGLDR__DisplayMessage("", "");
-            goto e;
+            break;
         }
     }
 }
