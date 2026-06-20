@@ -18,8 +18,8 @@ s32     PLGLDR__FetchEvent(void);
 void    PLGLDR__Reply(s32 event);
 
 void init_libs(){
-    // aptInit();
     irrstInit();
+    hidInit();
 }
 
 PluginMenu   menu;
@@ -62,6 +62,15 @@ void MonitorDeamon_Thread(void *arg){
             }
         }else{
             LOCK = true;
+            continue
+        }
+
+        hidScanInput();
+        if(hidKeysHeld() & KEY_SELECT){
+            Flash(true ,0xFF, 0xFF, 0xFF);
+            Flash(false ,0xFF, 0xFF, 0xFF);
+            PLGLDR__DisplayMessage("", "");
+            goto e;
         }
     }
 
@@ -93,12 +102,20 @@ void __main(){
         if(inputkey & (KEY_ZL | KEY_ZR)){
             PLGLDR__DisplayMenu(&menu);
         }
+
+        hidScanInput();
+        if(hidKeysHeld() & KEY_START){
+            Flash(true ,0xFF, 0xFF, 0xFF);
+            Flash(false ,0xFF, 0xFF, 0xFF);
+            PLGLDR__DisplayMessage("", "");
+            goto e;
+        }
     }
 }
 
 void deinit_libs(){
-    // aptExit();
     irrstExit();
+    hidExit();
 }
 
 void mainThread(void *arg){
@@ -113,9 +130,9 @@ void mainThread(void *arg){
 
     svcSignalEvent(g_continueGameEvent);
 
-    // Flash(false ,0xFF, 0x00, 0xFF);
-
     svcSleepThread(SEC(0xF));
+
+    Flash(false ,0xFF, 0x00, 0xFF);
 
     __main();
 
