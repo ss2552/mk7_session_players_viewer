@@ -7,8 +7,8 @@
 #include "utils.h"
 #include "plgldr.h"
 
-#define MAIN_THREAD_STACK_SIZE 0x1000
-#define MONITOR_THREAD_STACK_SIZE 0x1000
+#define MAIN_THREAD_STACK_SIZE 0xF000
+#define MONITOR_THREAD_STACK_SIZE 0x8000
 Handle   g_ThreadHandle, g_continueGameEvent, g_monitor_ThreadHandle, memLayoutChanged;
 u8 mainstack[MAIN_THREAD_STACK_SIZE] ALIGN(8),  monitorstack[MONITOR_THREAD_STACK_SIZE] ALIGN(8);
 
@@ -18,7 +18,7 @@ s32     PLGLDR__FetchEvent(void);
 void    PLGLDR__Reply(s32 event);
 
 void init_libs(){
-    aptInit();
+    // aptInit();
     irrstInit();
 }
 
@@ -80,7 +80,7 @@ void __main(){
 
     u32 inputkey = 0;
 
-    while(is_monitorring || aptMainLoop()){
+    while(is_monitorring){
 
         svcSleepThread(10000000ULL);
 
@@ -97,7 +97,7 @@ void __main(){
 }
 
 void deinit_libs(){
-    aptExit();
+    // aptExit();
     irrstExit();
 }
 
