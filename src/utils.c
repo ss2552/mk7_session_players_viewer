@@ -12,20 +12,16 @@ void Flash(bool isTop, u8 r, u8 g, u8 b){
 
     char title[32];
     char body[32];
-    /* ポインタは %p、色は 8 桁16進で出力 */
-    snprintf(title, sizeof(title), "%p", (void*)addr);
-    snprintf(body, sizeof(body), "%08x", color);
+    // snprintf(title, sizeof(title), "%p", (void*)addr);
+    // snprintf(body, sizeof(body), "%08x", color);
 
-    PLGLDR__DisplayMessage(title, body);
+    // PLGLDR__DisplayMessage(title, body);
 
-    /* デバッグ用ループはコメントアウトのまま残す */
-    /*
-        for (u32 i = 0; i < 64; i++){
-            *addr = color;
-            svcSleepThread(5000000);
-        }
+    for (u32 i = 0; i < 64; i++){
+        *addr = color;
+        svcSleepThread(5000000);
+    }
 
-        *addr = 0;
-    */
+    *addr = 0;
 
 }
