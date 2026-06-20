@@ -30,7 +30,7 @@ void MonitorDeamon_Thread(void *arg){
 
     (void)arg;
 
-    svcSleepThread(SEC(0xA));
+    svcSleepThread(SEC(0x9));
 
     // volatile arg = *arg;
 
@@ -93,7 +93,7 @@ void __main(){
         inputkey = hidKeysHeld();
         if(inputkey & (KEY_ZL | KEY_ZR)){
             PLGLDR__DisplayMenu(&menu);
-        }else if(inputkey & KEY_START && inputkey & KEK_SELECT){
+        }else if(inputkey & KEY_START && inputkey & KEY_SELECT){
             Flash(true ,0xFF, 0xFF, 0xFF);
             Flash(false ,0xFF, 0xFF, 0xFF);
             PLGLDR__DisplayMessage(" ", " ");
@@ -118,7 +118,7 @@ void mainThread(void *arg){
 
     svcSignalEvent(g_continueGameEvent);
 
-    svcSleepThread(SEC(0xF));
+    svcSleepThread(SEC(0xA));
 
     Flash(false ,0xFF, 0x00, 0xFF);
 
