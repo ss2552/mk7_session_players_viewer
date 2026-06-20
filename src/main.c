@@ -14,24 +14,22 @@ u8 mainstack[MAIN_THREAD_STACK_SIZE] ALIGN(8),  monitorstack[MONITOR_THREAD_STAC
 
 #define SEC(x) ((u64)(x) * 1000000000ULL)
 
-
-Result   res;
-
-
-
 s32     PLGLDR__FetchEvent(void);
 void    PLGLDR__Reply(s32 event);
 
 void init_libs(){
+    aptInit();
     	irrstInit();
 }
 
 PluginMenu   menu;
 
-bool LOCK = false;
-bool is_monitorring = false;
+volatile bool LOCK = false;
+volatile bool is_monitorring = false;
 
 void MonitorDeamon_Thread(void *arg){
+
+    (void)arg;
 
     svcSleepThread(SEC(1));
 
@@ -42,6 +40,8 @@ void MonitorDeamon_Thread(void *arg){
     is_monitorring = true;
 
     s32 event;
+
+    Result   res;
 
     while(true){
         res = svcWaitSynchronization(memLayoutChanged, 10000000ULL);
@@ -71,7 +71,7 @@ e:
 
 }
 
-void main(){
+void __main(){
 
     // Flash(false ,0x00, 0xFF, 0x00);
 
@@ -96,12 +96,13 @@ void main(){
 }
 
 void deinit_libs(){
+    aptExit();
     irrstExit();
 }
 
 void mainThread(void *arg){
 
-    // volatile arg = *arg;
+    (void)arg;
 
     init_libs();
 
@@ -111,11 +112,11 @@ void mainThread(void *arg){
 
     svcSignalEvent(g_continueGameEvent);
 
-    // Flash(false ,0xFF, 0x00, 0xFF);
+    Flash(false ,0xFF, 0x00, 0xFF);
 
     svcSleepThread(SEC(0xF));
 
-    main();
+    __main();
 
     deinit_libs();
 
