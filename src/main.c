@@ -90,7 +90,7 @@ void __main(){
 
         irrstScanInput();
         inputkey = irrstKeysHeld();
-        if(inputkey & KEY_ZL || inputkey & KEY_ZR){
+        if(inputkey & (KEY_ZL | KEY_ZR)){
             PLGLDR__DisplayMenu(&menu);
         }
     }
