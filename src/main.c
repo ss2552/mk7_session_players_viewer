@@ -18,11 +18,10 @@ s32     PLGLDR__FetchEvent(void);
 void    PLGLDR__Reply(s32 event);
 
 void init_libs(){
-    irrstInit();
     hidInit();
 }
 
-PluginMenu   menu;
+volatile PluginMenu   menu;
 
 volatile bool LOCK = false;
 volatile bool is_monitorring = false;
@@ -59,18 +58,11 @@ void MonitorDeamon_Thread(void *arg){
                     goto e;
                 default:
                     LOCK = false;
+                    continue;
             }
         }else{
             LOCK = true;
             continue;
-        }
-
-        hidScanInput();
-        if(hidKeysHeld() & KEY_SELECT){
-            Flash(true ,0xFF, 0xFF, 0xFF);
-            Flash(false ,0xFF, 0xFF, 0xFF);
-            PLGLDR__DisplayMessage("", "");
-            break;
         }
     }
 
@@ -97,24 +89,20 @@ void __main(){
             continue;
         }
 
-        irrstScanInput();
-        inputkey = irrstKeysHeld();
+        hidScanInput();
+        inputkey = hidKeysHeld();
         if(inputkey & (KEY_ZL | KEY_ZR)){
             PLGLDR__DisplayMenu(&menu);
-        }
-
-        hidScanInput();
-        if(hidKeysHeld() & KEY_START){
+        }else if(inputkey & KEY_START && inputkey & KEK_SELECT){
             Flash(true ,0xFF, 0xFF, 0xFF);
             Flash(false ,0xFF, 0xFF, 0xFF);
-            PLGLDR__DisplayMessage("", "");
+            PLGLDR__DisplayMessage(" ", " ");
             break;
         }
     }
 }
 
 void deinit_libs(){
-    irrstExit();
     hidExit();
 }
 
