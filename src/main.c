@@ -30,7 +30,7 @@ void MonitorDeamon_Thread(void *arg){
 
     (void)arg;
 
-    svcSleepThread(SEC(0x9));
+    svcSleepThread(SEC(8));
 
     // volatile arg = *arg;
 
@@ -51,7 +51,6 @@ void MonitorDeamon_Thread(void *arg){
                 case PLG_SLEEP_EXIT:
                 case PLG_ABOUT_TO_SWAP:
                     LOCK = true;
-                    Flash(true ,0xFF, 0x00, 0x00);
                     PLGLDR__Reply(event);
                     continue;
                 case PLG_ABOUT_TO_EXIT:;
@@ -80,6 +79,11 @@ void __main(){
     entry_menu(&menu);
 
     u32 inputkey = 0;
+
+    if(!is_monitorring){
+        PLGLDR__DisplayErrMessage("is_monitorring", "Not true");
+        return;
+    }
 
     while(is_monitorring){
 
@@ -120,7 +124,7 @@ void mainThread(void *arg){
 
     svcSleepThread(SEC(0xA));
 
-    Flash(false ,0xFF, 0x00, 0xFF);
+    // Flash(false ,0xFF, 0x00, 0xFF);
 
     __main();
 
