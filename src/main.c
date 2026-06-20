@@ -33,6 +33,8 @@ bool is_monitorring = false;
 
 void MonitorDeamon_Thread(void *arg){
 
+    svcSleepThread(SEC(1));
+
     // volatile arg = *arg;
 
     // Flash(false ,0xFF, 0x00, 0x00);
@@ -63,7 +65,6 @@ void MonitorDeamon_Thread(void *arg){
     }
 
 e:
-    svcSleepThread(SEC(5));
     is_monitorring = false;
     Flash(false ,0xFF, 0x00, 0x00);
     svcExitThread();
@@ -72,7 +73,7 @@ e:
 
 void main(){
 
-    Flash(false ,0x00, 0xFF, 0x00);
+    // Flash(false ,0x00, 0xFF, 0x00);
 
     entry_menu(&menu);
 
@@ -110,9 +111,9 @@ void mainThread(void *arg){
 
     svcSignalEvent(g_continueGameEvent);
 
-    Flash(false ,0xFF, 0x00, 0xFF);
+    // Flash(false ,0xFF, 0x00, 0xFF);
 
-    svcSleepThread(SEC(5));
+    svcSleepThread(SEC(0xF));
 
     main();
 
