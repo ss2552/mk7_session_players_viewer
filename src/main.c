@@ -31,7 +31,7 @@ void MonitorDeamon_Thread(void *arg){
 
     (void)arg;
 
-    svcSleepThread(SEC(1));
+    svcSleepThread(SEC(0xA));
 
     // volatile arg = *arg;
 
