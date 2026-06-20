@@ -62,7 +62,7 @@ void MonitorDeamon_Thread(void *arg){
             }
         }else{
             LOCK = true;
-            continue
+            continue;
         }
 
         hidScanInput();
@@ -70,7 +70,7 @@ void MonitorDeamon_Thread(void *arg){
             Flash(true ,0xFF, 0xFF, 0xFF);
             Flash(false ,0xFF, 0xFF, 0xFF);
             PLGLDR__DisplayMessage("", "");
-            goto e;
+            break;
         }
     }
 
