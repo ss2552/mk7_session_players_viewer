@@ -4,7 +4,7 @@
 #include "types.h"
 #include "plgldr.h"
 
-#define PA_PTR(addr) (void *)((u32)(addr) | 1 << 31)
+#define PA_PTR(addr) (void *)((u32)(addr) | 1U << 31)
 #define REG32(addr) (*(vu32 *)(PA_PTR(addr)))
 
 void Flash(bool isTop, u8 r, u8 g, u8 b){
