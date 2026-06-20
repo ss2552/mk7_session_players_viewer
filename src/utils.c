@@ -10,8 +10,8 @@ void Flash(bool isTop, u8 r, u8 g, u8 b){
 
     u32 color = (1U << 31) |  0x01000000U | ((u32)b << 16) | ((u32)g << 8) | (u32)r;
 
-    char title[32];
-    char body[32];
+    // char title[32];
+    // char body[32];
     // snprintf(title, sizeof(title), "%p", (void*)addr);
     // snprintf(body, sizeof(body), "%08x", color);
 
