@@ -19,7 +19,7 @@ void    PLGLDR__Reply(s32 event);
 
 void init_libs(){
     aptInit();
-    	irrstInit();
+    irrstInit();
 }
 
 PluginMenu   menu;
@@ -114,7 +114,7 @@ void mainThread(void *arg){
 
     Flash(false ,0xFF, 0x00, 0xFF);
 
-    svcSleepThread(SEC(0xF));
+    svcSleepThread(SEC(0x9));
 
     __main();
 
