@@ -52,6 +52,7 @@ void MonitorDeamon_Thread(void *arg){
                 case PLG_SLEEP_EXIT:
                 case PLG_ABOUT_TO_SWAP:
                     LOCK = true;
+                    Flash(true ,0xFF, 0x00, 0x00);
                     PLGLDR__Reply(event);
                     continue;
                 case PLG_ABOUT_TO_EXIT:;
@@ -112,9 +113,9 @@ void mainThread(void *arg){
 
     svcSignalEvent(g_continueGameEvent);
 
-    Flash(false ,0xFF, 0x00, 0xFF);
+    // Flash(false ,0xFF, 0x00, 0xFF);
 
-    svcSleepThread(SEC(0x9));
+    svcSleepThread(SEC(0xF));
 
     __main();
 
